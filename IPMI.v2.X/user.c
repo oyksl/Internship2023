@@ -168,11 +168,8 @@ void I2C_read(unsigned int *value, char ack_nack)
 {
     I2C5CONbits.RCEN = 1;               // Receive enable
     while (I2C5CONbits.RCEN);           // Wait until RCEN is cleared (automatic) 
-    //print_uart("receiver enable cleared\r\n");
     while (!I2C5STATbits.RBF);          // Wait until Receive Buffer is Full (RBF flag)  
-    //print_uart("receive buffer full\r\n");
     *value = I2C5RCV ;                   // Retrieve value from I2C5RCV
-    //print_uart("value retrieved\r\n");
 
     if (ack_nack)                      // Do we need to send an ACK or a NACK?  
         I2C_ack();                      // Send ACK  
