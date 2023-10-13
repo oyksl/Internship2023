@@ -62,22 +62,13 @@ int main(void) {
     print_uart("Hello! \n\r");
     print_uart("*****************************\n\r");
     
-    /*
-    unsigned int address;
-        address = I2C2ADD;
-        char log[200];
-        sprintf(log, "%i \r\n", address);
-        print_uart(log);
-        delay_ms(1000);
-    */
-    
     while (1)
     {     
         
         TMP275_read(TMP275_PR, &value);
         delay_ms(1000);
         char log[200];
-        sprintf(log, "Temperature : %i°C \r\n", value);
+        sprintf(log, "Temperature : %iÂ°C \r\n", value);
         print_uart(log);
         delay_ms(1000);
                       
