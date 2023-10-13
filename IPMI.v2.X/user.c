@@ -20,33 +20,8 @@
 /* User Functions                                                             */
 /******************************************************************************/
 
-/* TODO Initialize User Ports/Peripherals/Project here */
-
-
-void init_GPIO() {
-  	
-// 0:output, 1:input
-    TRISFbits.TRISF4 = 1; // PIC_SDA
-    TRISFbits.TRISF5 = 1; // PIC_SCL
-    TRISGbits.TRISG7 = 1; // PIC_UART_RX
-    TRISGbits.TRISG8 = 0; // PIC_UART_TX
-    TRISAbits.TRISA2 = 0; //PIC_IMPI_SCL
-    TRISAbits.TRISA3 = 0; //PIC_IMPI_SDA
-    
-    
-    DDPCONbits.JTAGEN = 0;             // JTAG program/debug port is multiplexed with port pins RA0, RA1, RA4 and RA5 on 100-pin
-                                       // devices, port pins RB10, RB11, RB12 and RB13 on 64-pin devices. At power-on-reset, these pins
-                                       // are controlled by the JTAG port. To use these pins for general purpose I/O, the user?s application
-                                       // code must clear JTAGEN (DDPCON<3>) bit = 0. To use these pins for JTAG program/debug, the
-                                       // user?s application code must maintain JTAGEN bit = 1.
-    
-
-}
-
-void UART_init() {
-    // !! UART 2 ILE UART 3 SEMATIKTE TERS SEKILDE ADLANDIRILMIS, UART3 = RX-TX 2, UART2 = TX-RX 3 !!    
+void UART_init() {   
     UARTConfigure(UART3, UART_ENABLE_PINS_TX_RX_ONLY);
-    //  UARTSetFifoMode(UART3, UART_INTERRUPT_ON_TX_NOT_FULL | UART_INTERRUPT_ON_RX_NOT_EMPTY);  //?FIFO icin interrupt'a gerek yok 
     UARTSetLineControl(UART3, UART_DATA_SIZE_8_BITS | UART_PARITY_NONE | UART_STOP_BITS_1);
     UARTSetDataRate(UART3, GetPeripheralClock(), UART_BAUDRATE);
     UARTEnable(UART3, UART_ENABLE_FLAGS(UART_PERIPHERAL | UART_RX | UART_TX));
@@ -111,8 +86,7 @@ void I2C_init(double freq){
     I2C5CONbits.ON = 1; // turn on i2c5
     
 }
-
-// I2C_wait_for_idle() waits until the I2C peripheral is no longer doing anything  
+ 
 void I2C_wait_for_idle(void)
 {
     while(I2C5CON & 0x1F); // Acknowledge sequence not in progress
@@ -186,10 +160,7 @@ void I2C_write(unsigned char address, char wait_ack)
 {
     I2C5TRN = address;// | 0;              // Send slave address with Read/Write bit cleared
     while (I2C5STATbits.TBF == 1);      // Wait until transmit buffer is empty
-    //if(I2C5STATbits.ACKSTAT == 0) print_uart("sensor acknowledged!\r\n");
     I2C_wait_for_idle();                // Wait until I2C bus is idle
-    
-    //if (wait_ack) while (I2C5STATbits.ACKSTAT == 1); // Wait until ACK is received  
 }
 
 // value is the value of the data we want to send, set ack_nack to 0 to send an ACK or anything else to send a NACK  
@@ -212,22 +183,12 @@ void I2C_read(unsigned int *value, char ack_nack)
 // Read a byte from register at reg_address and return in *value
 void TMP275_read(unsigned char reg_address, unsigned int *value)
 {
-    //print_uart("read started\r\n");
     I2C_start();                        /* Send start condition */  
-    //print_uart("i2c started\r\n");
-    //I2C_write(TMP275_ADDRESS << 1, 1); /* Send TMP275's address, read/write bit not set (AD + R) */  
     I2C_write(TMP275_ADDRESS_W, 1);
-    //print_uart("address sent\r\n");
     I2C_write(reg_address, 1);          /* Send the register address (RA) */  
     I2C_stop();
     I2C_start();
-    //I2C_restart();                      /* Send repeated start condition */  
-    //print_uart("read restarted\r\n");
-    //I2C_write(TMP275_ADDRESS << 1 | 1, 1); /* Send TMP275's address, read/write bit set (AD + W) */  
     I2C_write(TMP275_ADDRESS_R, 1);
-    //print_uart("address sent w/r\r\n");
     I2C_read(value, 1);                 /* Read value from the I2C bus */  
-    //print_uart("value read\r\n");
     I2C_stop();                         /* Send stop condition */  
-    //print_uart("read over");
 }
