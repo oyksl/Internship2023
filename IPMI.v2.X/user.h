@@ -7,7 +7,7 @@
 
 /* TODO Application specific user parameters used in user.c may go here */
 
-#define SYS_FREQ     32000000L          //!!! eger system frekansi degistirilirse bu deger de degismeli !!!!
+#define SYS_FREQ     32000000L          
 #define UART_BAUDRATE   115200
 // #define UART_PIC_INTERFACE UART3
 
